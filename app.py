@@ -4,8 +4,6 @@ import requests
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timedelta
-import folium
-from streamlit_folium import folium_static
 from geopy.geocoders import Nominatim
 import pytz
 import time
@@ -145,6 +143,12 @@ st.markdown("""
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(90deg, var(--primary-color), var(--accent-color)) !important;
+    }
+    
+    /* Map styling */
+    .stMap {
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
     
     /* Responsive adjustments */
@@ -432,33 +436,26 @@ def main():
             
             st.markdown('</div>', unsafe_allow_html=True)
         
-        # Map section
+        # Map section using native Streamlit map
         with st.container():
             st.markdown('<div class="card">', unsafe_allow_html=True)
             st.markdown('<h3>Weather Radar Map</h3>', unsafe_allow_html=True)
             
-            # Create map
-            map_center = [40.7128, -74.0060]  # New York coordinates
-            m = folium.Map(location=map_center, zoom_start=11, tiles="CartoDB dark_matter")
+            # Create map with sample data
+            map_data = pd.DataFrame({
+                'lat': [40.7128, 40.72, 40.70, 40.71],
+                'lon': [-74.0060, -74.01, -74.00, -74.02],
+                'size': [100, 80, 60, 40],
+                'color': ['#1abc9c', '#3498db', '#1abc9c', '#3498db']
+            })
             
-            # Add markers
-            folium.Marker(
-                location=map_center,
-                popup="New York",
-                icon=folium.Icon(color="blue", icon="cloud")
-            ).add_to(m)
+            # Create native Streamlit map
+            st.map(map_data,
+                latitude=40.7128,
+                longitude=-74.0060,
+                zoom=11,
+                use_container_width=True)
             
-            # Add radar overlay (simulated)
-            folium.Circle(
-                location=map_center,
-                radius=5000,
-                color="#1abc9c",
-                fill=True,
-                fill_color="#1abc9c",
-                fill_opacity=0.2
-            ).add_to(m)
-            
-            folium_static(m, height=300)
             st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
